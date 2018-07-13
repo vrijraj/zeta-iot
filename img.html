@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>JSSample</title>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+       <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!-- Bootstrap core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <!-- Material Design Bootstrap -->
+    <link href="css/mdb.min.css" rel="stylesheet">
+</head>
+
+<h2>Face Rectangle</h2>
+<ul id="faceRectangle">
+<!-- Will populate list with response content -->
+</ul>
+
+<h2>Emotions</h2>
+<ul id="scores">
+<!-- Will populate list with response content -->
+</ul>
+
+<body style="padding:2%">
+
+<script type="text/javascript">
+    $(function() {
+        var params = { };
+
+        $.ajax({
+            url: "https://westus.api.cognitive.microsoft.com/emotion/v1.0/recognize?" + $.param(params),
+            beforeSend: function(xhrObj){
+                xhrObj.setRequestHeader("Content-Type","application/json");
+
+                xhrObj.setRequestHeader("Ocp-Apim-Subscription-Key","b53dfc177229422c8e97c06fb92c0f84");
+            },
+            type: "POST",
+            // Request body
+            data: '{"url": "http://rasb.epizy.com/a.png"}',
+        }).done(function(data) {
+            // Get face rectangle dimensions
+            var faceRectangle = data[0].faceRectangle;
+            var faceRectangleList = $('#faceRectangle');
+
+            for (var prop in faceRectangle) {
+                faceRectangleList.append("<li> " + prop + ": " + faceRectangle[prop] + "</li>");
+            }
+
+            var scores = data[0].scores;
+            var scoresList = $('#scores');
+
+            for(var prop in scores) {
+                scoresList.append("<li> " + prop + ": " + scores[prop] + "</li>")
+            }
+        }).fail(function(err) {
+            alert("Error: " + JSON.stringify(err));
+        });
+    });
+</script>
+</body>
+</html>

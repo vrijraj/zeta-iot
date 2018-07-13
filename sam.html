@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Analyze Sample</title>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!-- Bootstrap core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <!-- Material Design Bootstrap -->
+    <link href="css/mdb.min.css" rel="stylesheet">
+</head>
+<body>
+
+<script type="text/javascript">
+    function processImage() {
+        var subscriptionKey = "e5ad47e34e064387b9eb7791eafe2fbb";
+
+        var uriBase = "https://westcentralus.api.cognitive.microsoft.com/vision/v1.0/analyze";
+
+        var params = {
+            "visualFeatures": "Categories,Description,Color",
+            "details": "",
+            "language": "en",
+        };
+        var sourceImageUrl = document.getElementById("inputImage").value;
+        document.querySelector("#sourceImage").src = sourceImageUrl;
+
+        $.ajax({
+            url: uriBase + "?" + $.param(params),
+
+            beforeSend: function(xhrObj){
+                xhrObj.setRequestHeader("Content-Type","application/json");
+                xhrObj.setRequestHeader("Ocp-Apim-Subscription-Key", subscriptionKey);
+            },
+
+            type: "POST",
+            data: '{"url": ' + '"' + sourceImageUrl + '"}',
+        })
+
+        .done(function(data) {
+            $("#responseTextArea").val(JSON.stringify(data, null, 2));
+        })
+
+        .fail(function(jqXHR, textStatus, errorThrown) {
+            var errorString = (errorThrown === "") ? "Error. " : errorThrown + " (" + jqXHR.status + "): ";
+            errorString += (jqXHR.responseText === "") ? "" : jQuery.parseJSON(jqXHR.responseText).message;
+            alert(errorString);
+        });
+    };
+</script>
+
+Enter the URL to an image of a natural or artificial landmark, then click the <strong>Analyze image</strong> button.
+<br><br>
+Image <input type="text" name="inputImage" id="inputImage" value="https://www.smallworks.ca/wp-content/uploads/farm_lane_house_vancouver_ext1.jpg" />
+<button onclick="processImage()">Analyze image</button>
+<br><br>
+    
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-6" style="margin:0;padding:0;background-color:">
+            <textarea id="responseTextArea" class="UIInput" style="width:100%;height:70vh"></textarea>
+        </div>
+        <div class="col-md-6" style="margin:0;padding:0">
+            <img id="sourceImage" width="100%" />
+        </div>
+    </div>
+</div>
+    
+<!--
+<div id="wrapper" style=" display:table;">
+    <div id="jsonOutput" style="display:table-cell;width:50%">
+        Response:
+        <br><br>
+        <textarea id="responseTextArea" class="UIInput" style="width:180px; height:400px;"></textarea>
+    </div>
+    
+    <div id="imageDiv" style="display:table-cell;">
+       
+        <br><br>
+        <img id="sourceImage" width="50%" />
+    </div>
+</div>
+-->
+</body>
+</html>
